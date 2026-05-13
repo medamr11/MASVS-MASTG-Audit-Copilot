@@ -1,0 +1,42 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.example
+.env.exmple
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+.pytest_cache/
+
+# User specifically requested exclusions
+report/
+screenshotter/
+
+# Backend specific
+backend/data/
+backend/chroma_db/
+backend/reports/
+backend/uploads/
+
+# IDE / OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+docker-compose.override.yml
