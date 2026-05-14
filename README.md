@@ -17,7 +17,7 @@ AI-powered mobile application security audit tool that transforms raw security a
 │                   FastAPI Backend                           │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌──────────────────┐   │
 │  │ Parsers │→│ Mapper  │→│ Scorer  │→│ LLM + RAG Engine │   │
-│  │ Module  │ │ Module  │ │ Module  │ │ (Claude + Chroma)│   │
+│  │ Module  │ │ Module  │ │ Module  │ │ (Gemini + Chroma)│   │
 │  └─────────┘ └─────────┘ └─────────┘ └──────────────────┘   │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │              Report Generator (Jinja2 → HTML/PDF)    │   │
