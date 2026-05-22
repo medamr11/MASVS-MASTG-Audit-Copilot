@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom'
 import {
   Upload, FileText, Zap, Database,
   Brain, BarChart3, Lock, Eye, ArrowRight, Cpu,
-  FileJson, FileCode, Globe
+  FileJson, FileCode, Globe, Shield
 } from 'lucide-react'
 
 const features = [
   {
     icon: Database,
     title: 'Multi-Source Parsing',
-    desc: 'MobSF, JADX, Burp Suite, AndroidManifest — all auto-detected.',
+    desc: 'APK direct upload via MobSF, JADX, Burp Suite, Manifest — all auto-detected.',
     color: 'text-cyan-400',
     bg: 'bg-cyan-400/10',
   },
@@ -37,6 +37,7 @@ const features = [
 ]
 
 const fileTypes = [
+  { icon: Shield, label: 'Android APK', ext: '.apk', color: 'text-green-400', bg: 'bg-green-400/10' },
   { icon: FileJson, label: 'MobSF JSON', ext: '.json', color: 'text-blue-400', bg: 'bg-blue-400/10' },
   { icon: FileCode, label: 'Burp Suite XML', ext: '.xml', color: 'text-amber-400', bg: 'bg-amber-400/10' },
   { icon: FileCode, label: 'AndroidManifest', ext: '.xml', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
@@ -116,7 +117,7 @@ export default function HomePage() {
             ))}
           </div>
           <p className="text-sm text-slate-500 mt-6 text-center font-medium">
-            Upload multiple files together for a comprehensive cross-source audit.
+            Upload an APK for automatic MobSF analysis, or combine multiple artifact files for a comprehensive cross-source audit.
           </p>
         </div>
       </div>

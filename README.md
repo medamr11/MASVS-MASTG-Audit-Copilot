@@ -2,6 +2,9 @@
 
 AI-powered mobile application security audit tool that transforms raw security analysis artifacts into structured, professional MASVS v2 audit reports.
 
+## Demo
+<video src="app_demo.mp4" controls width="100%"></video>
+
 ## Architecture
 
 ![Architecture](architecture.png)

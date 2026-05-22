@@ -15,6 +15,7 @@ from app.models.schemas import JobResponse, JobStatus, AppMetadata, PipelineEven
 from app.pipeline import AnalysisPipeline
 from app.core.config import get_settings
 from app.core.logging import get_logger
+from app.integrations.mobsf_client import MobSFClient, MobSFError
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -36,7 +37,7 @@ async def analyze(
     """Upload files and start the analysis pipeline."""
     MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
     MAX_FILES = 10
-    ALLOWED_EXTENSIONS = {".json", ".xml", ".java", ".kt", ".txt"}
+    ALLOWED_EXTENSIONS = {".json", ".xml", ".java", ".kt", ".txt", ".apk"}
 
     if len(files) > MAX_FILES:
         raise HTTPException(status_code=400, detail=f"Maximum {MAX_FILES} files allowed per analysis.")
@@ -68,6 +69,46 @@ async def analyze(
         file_path = upload_dir / safe_name
         file_path.write_bytes(content)
         file_paths.append(str(file_path))
+
+    # Process APK files through MobSF API
+    settings_check = get_settings()
+    apk_files = [p for p in file_paths if p.lower().endswith(".apk")]
+    if apk_files and settings_check.mobsf_api_key:
+        try:
+            mobsf = MobSFClient()
+            for apk_path in apk_files:
+                logger.info("mobsf_apk_processing", apk=apk_path)
+                # Upload → Scan → Get JSON report
+                report_json = mobsf.upload_scan_and_report(
+                    apk_path,
+                    save_json_to=upload_dir / f"{Path(apk_path).stem}_mobsf_report.json",
+                )
+                # Replace the APK path with the generated JSON report path
+                json_path = str(upload_dir / f"{Path(apk_path).stem}_mobsf_report.json")
+                file_paths.remove(apk_path)
+                file_paths.append(json_path)
+                logger.info("mobsf_apk_converted", json_path=json_path)
+
+                # Auto-fill app metadata from MobSF report if not provided
+                if app_name == "Unknown App" and report_json.get("app_name"):
+                    app_name = report_json["app_name"]
+                if not app_package and report_json.get("package_name"):
+                    app_package = report_json["package_name"]
+                if not app_version and report_json.get("version_name"):
+                    app_version = report_json["version_name"]
+        except MobSFError as e:
+            raise HTTPException(
+                status_code=502,
+                detail=f"MobSF analysis failed: {str(e)}. "
+                       f"Ensure MobSF is running at {settings_check.mobsf_url} "
+                       f"and the API key is correct.",
+            )
+    elif apk_files and not settings_check.mobsf_api_key:
+        raise HTTPException(
+            status_code=400,
+            detail="APK upload requires MobSF integration. "
+                   "Configure MOBSF_URL and MOBSF_API_KEY in your .env file.",
+        )
 
     # Create job
     app_metadata = AppMetadata(

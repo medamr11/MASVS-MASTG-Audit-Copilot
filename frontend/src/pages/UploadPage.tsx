@@ -5,6 +5,7 @@ import { startAnalysis } from '../api/client'
 import { PageHeader } from '../components/layout/Sidebar'
 
 const FILE_TYPES: Record<string, { label: string; color: string; bg: string; icon: typeof FileJson }> = {
+  apk: { label: 'Android APK', color: 'text-green-400', bg: 'bg-green-400/10', icon: Shield },
   json: { label: 'MobSF JSON', color: 'text-blue-400', bg: 'bg-blue-400/10', icon: FileJson },
   xml: { label: 'Burp / Manifest', color: 'text-amber-400', bg: 'bg-amber-400/10', icon: FileCode },
   java: { label: 'JADX Source', color: 'text-emerald-400', bg: 'bg-emerald-400/10', icon: FileCode },
@@ -74,7 +75,7 @@ export default function UploadPage() {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <input id="file-input" type="file" multiple className="hidden" onChange={handleFileInput}
-          accept=".json,.xml,.java,.kt,.txt" />
+          accept=".apk,.json,.xml,.java,.kt,.txt" />
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-inner ${
             isDragging ? 'bg-cyan-500/20 shadow-cyan-500/20' : 'bg-slate-800 shadow-black/50 group-hover:bg-cyan-950/50'
@@ -84,7 +85,7 @@ export default function UploadPage() {
           <div>
             <p className="text-xl font-bold text-slate-100">Drop files here or click to browse</p>
             <p className="text-sm text-slate-400 mt-2">
-              MobSF JSON &bull; Burp Suite XML &bull; AndroidManifest.xml &bull; JADX .java
+              Android APK &bull; MobSF JSON &bull; Burp Suite XML &bull; AndroidManifest.xml &bull; JADX .java
             </p>
           </div>
         </div>

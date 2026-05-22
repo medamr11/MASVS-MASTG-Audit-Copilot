@@ -57,8 +57,13 @@ class MobSFParser(BaseParser):
         """Parse code_analysis section."""
         findings = []
         code_analysis = data.get("code_analysis", {})
+        
+        # Handle newer MobSF format where findings are under 'findings' key
+        findings_data = code_analysis.get("findings", code_analysis)
+        if not isinstance(findings_data, dict):
+            findings_data = {}
 
-        for rule_id, details in code_analysis.items():
+        for rule_id, details in findings_data.items():
             if not isinstance(details, dict):
                 continue
 
@@ -99,6 +104,10 @@ class MobSFParser(BaseParser):
         """Parse manifest_analysis section."""
         findings = []
         manifest = data.get("manifest_analysis", [])
+
+        # Handle newer MobSF format where findings are under 'manifest_findings' key
+        if isinstance(manifest, dict):
+            manifest = manifest.get("manifest_findings", [])
 
         if isinstance(manifest, list):
             for item in manifest:
@@ -175,15 +184,23 @@ class MobSFParser(BaseParser):
             cert_findings = cert.get("certificate_findings", [])
             if isinstance(cert_findings, list):
                 for item in cert_findings:
-                    if not isinstance(item, dict):
+                    # Handle both list format [severity, desc, title] and dict format
+                    if isinstance(item, list) and len(item) >= 3:
+                        severity_raw = item[0]
+                        desc = item[1]
+                        title = item[2]
+                    elif isinstance(item, dict):
+                        severity_raw = item.get("severity", "info")
+                        title = item.get("title", "Certificate Issue")
+                        desc = item.get("description", "")
+                    else:
                         continue
-                    severity_str = self._severity_normalize(
-                        str(item.get("severity", "info"))
-                    )
+                        
+                    severity_str = self._severity_normalize(str(severity_raw))
                     findings.append(Finding(
                         source=FindingSource.MOBSF,
-                        raw_title=str(item.get("title", "Certificate Issue")),
-                        raw_description=str(item.get("description", "")),
+                        raw_title=str(title),
+                        raw_description=str(desc),
                         severity=Severity(severity_str),
                         category=FindingCategory.CRYPTO,
                         evidence=[],

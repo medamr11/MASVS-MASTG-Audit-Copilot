@@ -73,7 +73,18 @@ export async function startAnalysis(files: File[], appName: string, appPackage: 
   formData.append('app_version', appVersion);
 
   const res = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: formData });
-  if (!res.ok) throw new Error(`Analysis failed: ${res.status}`);
+  if (!res.ok) {
+    let errorDetail = `Analysis failed: ${res.status}`;
+    try {
+      const errorData = await res.json();
+      if (errorData.detail) {
+        errorDetail = typeof errorData.detail === 'string' ? errorData.detail : JSON.stringify(errorData.detail);
+      }
+    } catch (e) {
+      // Ignore JSON parse error, fallback to status
+    }
+    throw new Error(errorDetail);
+  }
   return res.json();
 }
 

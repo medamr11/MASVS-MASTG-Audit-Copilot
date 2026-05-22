@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.2
     llm_max_context_tokens: int = 90_000
 
+    # ── MobSF Integration ────────────────────────────────────────
+    mobsf_url: str = "http://localhost:8001"
+    mobsf_api_key: str = ""
+
     # ── Database ─────────────────────────────────────────────────
     database_url: str = "sqlite:///./data/audit_copilot.db"
 
